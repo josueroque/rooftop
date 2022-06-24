@@ -1,11 +1,27 @@
-CLONE USING THE FOLLOWING COMMAND
-git clone https://github.com/josueroque/rooftop.git
 
-RUN THE FOLLOWING TO INSTALL PROJECT DEPENDENCIES
+## Clone using the following command
+
+```
+git clone https://github.com/josueroque/rooftop.git
+```
+
+## Run the following to install project dependencies
+
+```
 npm i
 
-TO RUN LOCALLY TYPE THE FOLLOWING
+```
+## To run locally type the following
+
+```
 npm start
 
-TO RUN TEST TYPE THE FOLLOWING
+```
+## To run test type the following
+
+```
 npm test
+
+```
+
+
