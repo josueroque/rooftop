@@ -3,24 +3,31 @@ const url = "https://rooftop-career-switch.herokuapp.com";
 const email = "josueroque@yahoo.com";
 let token: { token: string };
 let stringsArray: string[];
+let startTime: any;
 
 getToken(url, email)
   .then(async (resp: any) => {
     token = await resp.json();
+    console.log("Token fetched succesfully");
     stringsArray = await getArray(token.token);
-    const sortedArray = check(stringsArray, token.token);
-    return sortedArray;
+    console.log("Array fetched succesfully");
+    console.log("Starting to check");
+    startTime = new Date().getTime();
+    const sortedArray = await check(stringsArray, token.token);
+    console.log("Sorted array:");
+    console.log(sortedArray.join(""));
+    console.log("Sorted string:");
+    console.log(sortedArray);
   })
   .catch((error) => {
     throw new Error(error);
   });
 
-const check = (blocks: Array<string>, token: string) => {
-  iterate(blocks, token).then((response) => {
-    console.log(blocks);
-    console.log(response);
-    return response;
-  });
+const check = async (blocks: Array<string>, token: string) => {
+  const returnedArray = await iterate(blocks, token);
+  const endTime = new Date().getTime();
+  console.log(`Finished, time taken=> ${(endTime - startTime) / 1000} seconds`);
+  return returnedArray;
 };
 
 async function getToken(url: string, email: string): Promise<any> {
@@ -57,29 +64,32 @@ const compare = async (
 };
 
 const iterate = async (blocks: Array<string>, token: string) => {
-  const sortedArray = [...blocks];
-  const length: number = sortedArray.length;
-  for (let item = 0; item < length - 1; item++) {
-    for (let innerItem = item; innerItem < length; innerItem++) {
-      9;
-      let sequencial: boolean = false;
-      if (item !== innerItem) {
-        const response = await compare(
-          sortedArray[item],
-          sortedArray[innerItem],
-          token
-        );
-        if (response) {
-          sequencial = true;
-          const inmediate = sortedArray[item + 1];
-          const newInmediate = sortedArray[innerItem];
-          sortedArray[item + 1] = newInmediate;
-          sortedArray[innerItem] = inmediate;
+  try {
+    const sortedArray = [...blocks];
+    const length: number = sortedArray.length;
+    for (let item = 0; item < length - 1; item++) {
+      for (let innerItem = item; innerItem < length; innerItem++) {
+        let sequencial: boolean = false;
+        if (item !== innerItem) {
+          const response = await compare(
+            sortedArray[item],
+            sortedArray[innerItem],
+            token
+          );
+          if (response) {
+            sequencial = true;
+            const inmediate = sortedArray[item + 1];
+            const newInmediate = sortedArray[innerItem];
+            sortedArray[item + 1] = newInmediate;
+            sortedArray[innerItem] = inmediate;
+          }
+        }
+        if (item === length - 2 && innerItem === length - 1) {
+          return sortedArray;
         }
       }
-      if (item === length - 2 && innerItem === length - 1) {
-        return sortedArray;
-      }
     }
+  } catch (error) {
+    throw new Error(error);
   }
 };
