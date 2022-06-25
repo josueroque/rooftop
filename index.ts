@@ -7,23 +7,23 @@ let startTime: any;
 
 getToken(url, email)
   .then(async (resp: any) => {
-    token = await resp.json();
+    token = await resp?.json();
     console.log("Token fetched succesfully");
-    stringsArray = await getArray(token.token);
+    stringsArray = await getArray(token?.token);
     console.log("Array fetched succesfully");
-    console.log("Starting to check");
+    console.log("Starting to check, please wait...");
     startTime = new Date().getTime();
-    const sortedArray = await check(stringsArray, token.token);
-    console.log("Sorted array:");
-    console.log(sortedArray.join(""));
+    const sortedArray = await check(stringsArray, token?.token);
     console.log("Sorted string:");
+    console.log(sortedArray?.join(""));
+    console.log("Sorted array:");
     console.log(sortedArray);
   })
   .catch((error) => {
     throw new Error(error);
   });
 
-const check = async (blocks: Array<string>, token: string) => {
+export const check = async (blocks: Array<string>, token: string) => {
   const returnedArray = await iterate(blocks, token);
   const endTime = new Date().getTime();
   console.log(`Finished, time taken=> ${(endTime - startTime) / 1000} seconds`);
@@ -39,8 +39,8 @@ const getArray = async (token: string): Promise<Array<string>> => {
   try {
     const response = await fetch(`${url}/blocks?token=${token}`);
     const blocks: { data: Array<string>; chunkSize: number; length: number } =
-      await response.json();
-    return blocks.data;
+      await response?.json();
+    return blocks?.data;
   } catch (error) {
     throw new Error(error);
   }
@@ -59,17 +59,17 @@ const compare = async (
       blocks: [string1, string2],
     }),
   });
-  const compareResponse = await response.json();
+  const compareResponse = await response?.json();
   return compareResponse.message;
 };
 
 const iterate = async (blocks: Array<string>, token: string) => {
   try {
-    const sortedArray = [...blocks];
+    const sortedArray = Array.isArray(blocks) ? [...blocks] : [];
     const length: number = sortedArray.length;
     for (let item = 0; item < length - 1; item++) {
       for (let innerItem = item; innerItem < length; innerItem++) {
-        let sequencial: boolean = false;
+        let sequential: boolean = false;
         if (item !== innerItem) {
           const response = await compare(
             sortedArray[item],
@@ -77,7 +77,7 @@ const iterate = async (blocks: Array<string>, token: string) => {
             token
           );
           if (response) {
-            sequencial = true;
+            sequential = true;
             const inmediate = sortedArray[item + 1];
             const newInmediate = sortedArray[innerItem];
             sortedArray[item + 1] = newInmediate;
