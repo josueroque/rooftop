@@ -122,8 +122,10 @@ getToken(url, email)
         console.log(sortedArray?.join(""));
         console.log("Sorted array:");
         console.log(sortedArray);
-      } else console.log("An error has occured, please ty again later");
+      }
     }
+    if (!stringsArray || errorIterate)
+      console.log("An error has occured, please ty again later");
   })
   .catch((error) => {
     console.log(error);
