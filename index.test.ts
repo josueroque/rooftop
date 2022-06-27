@@ -22,29 +22,36 @@ const MOCK_INITIAL_ARRAY = [
   "SNjTy1oaT7AlaXodImtVunm3zqCJMPBvls0eYvQ1sOZOvSQknlt8jnBJSlZiu6RoGsjqvV37GYnkGNgoOrpu9eFIL7ZDT96cc9MG",
 ];
 
+import { expect, jest } from "@jest/globals";
+import type { iterate } from "./index";
 import { check } from "./index";
 
 jest.mock("node-fetch");
 import fetch from "node-fetch";
-const { Response } = jest.requireActual("node-fetch");
 
 describe("check function", () => {
   let sortedArray: Array<string> = [];
+  let mockIterate = jest.fn<typeof iterate>();
+  beforeEach(async () => {
+    fetch.mockResolvedValue({
+      json: async () => ({ response: { data: MOCK_SORTED_ARRAY } }),
+    });
+    mockIterate.mockImplementation((blocks: Array<string>, token: string) => {
+      return Promise.resolve(MOCK_SORTED_ARRAY);
+    });
+    sortedArray = await check(mockIterate, MOCK_INITIAL_ARRAY, MOCK_TOKEN);
+  });
 
   describe("test check function", () => {
-    beforeEach(async () => {
-      fetch.mockResolvedValue({
-        json: async () => ({ response: { data: MOCK_SORTED_ARRAY } }),
-      });
-      sortedArray = await check(MOCK_INITIAL_ARRAY, MOCK_TOKEN);
-    });
-
     it("The fetch function has been called", () => {
       expect(fetch).toHaveBeenCalled();
     });
 
+    it("The iterate function has been called", async () => {
+      expect(mockIterate).toHaveBeenCalledTimes(2);
+    });
+
     it("We get an array from the function", () => {
-      console.log(sortedArray);
       expect(Array.isArray(sortedArray)).toBe(true);
     });
 
